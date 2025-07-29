@@ -87,7 +87,10 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
       #  run = p.add_run()
        # run.add_picture(image_path, width=Inches(width_in_inches))
     
-    def add_centered_plotly_image(image_path, run, width_in_inches=5):
+    def add_centered_plotly_image(doc, image_path, width_in_inches=5):
+        p = doc.add_paragraph()
+        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        run = p.add_run()
         if not image_path or not os.path.exists(image_path):
             run.add_text("[Erreur: figure absente]")
             return
@@ -95,7 +98,7 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
             run.add_picture(image_path, width=Inches(width_in_inches))
         except Exception as e:
             run.add_text(f"[Erreur: impossible d’ajouter le graphique – {e}]")
-            
+                
     def add_table_from_df(df, afficher_index=True):
         df = df.copy()
         if afficher_index:
@@ -176,7 +179,7 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
             doc.add_paragraph()
             # Graphe camembert
             add_text_paragraph("Répartition de la production par source",bold=True)
-            add_centered_plotly_image(img_production,run)
+            add_centered_plotly_image(doc,img_production)
         
         doc.add_page_break()
 
@@ -197,7 +200,7 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
             doc.add_paragraph()
             # Graphe camembert
             add_text_paragraph("Répartition de l’état de l’installation globale",bold=True)
-            add_centered_plotly_image(img_etat,run)
+            add_centered_plotly_image(doc,img_etat)
         doc.add_page_break()
 
     # ========================
@@ -213,14 +216,14 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
 
             # Graphique production réelle vs théorique
             add_text_paragraph("Production solaire réelle vs théorique (Energie)",bold=True)
-            add_centered_plotly_image(img1_evolution,run)
+            add_centered_plotly_image(doc,img1_evolution)
 
         if inclure_prod_source :
             doc.add_paragraph()
             # Graphique production quotidienne par source
             add_text_paragraph("Production quotidienne par source (Puissance)",bold=True)
             add_text_paragraph(f"Résultat du {date_jour}",italic=True)
-            add_centered_plotly_image(img2_evolution,run)
+            add_centered_plotly_image(doc,img2_evolution)
 
     temp_path = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
     doc.save(temp_path.name)
