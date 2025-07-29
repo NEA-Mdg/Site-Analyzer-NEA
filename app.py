@@ -280,7 +280,7 @@ if onglet == "💡 Indications":
     st.markdown(" ⚠️ Points de vigilance : ")
     st.warning("""
     - 1/ Les fichiers doivent être au **format Excel (.xlsx / .xlsm) ou CSV (.csv)**  
-    - 2/ Respecter strictement l’**ordre des colonnes** tel que défini pour le tableau de données
+    - 2/ Respecter strictement l’**ordre des colonnes** tel que défini pour le tableau de données (les noms ne sont pas importants)
     - 3/ Vérifier que le **format de date et heure** utilisé soit bien conforme à celui requis 
     - 4/ S’assurer que toutes les valeurs soient exprimées dans les **unités** demandées
     - 5/ Vérifier que toutes les **valeurs numériques et textuelles** soient **valides** (aucun caractère non-autorisé ne doit être présent )
