@@ -9,3 +9,4 @@ vl-convert-python
 openpyxl
 plotly
 kaleido
+matplotlib

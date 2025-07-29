@@ -10,7 +10,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
 import unicodedata
+import matplotlib.pyplot as plt
 
+import io
 import re
 import os
 from io import BytesIO
@@ -40,16 +42,32 @@ def clean_statut(x):
     return x_sans_accent.strip().lower()
 
 def sauvegarder_fig_plotly(fig, nom_fichier):
+    
     try:
+        # Convertir fig Plotly → PNG en mémoire
+        img_bytes = fig.to_image(format='png', width=900, height=600, scale=2)
+        image = Image.open(io.BytesIO(img_bytes))
+        
+        # Recréer une fig Matplotlib avec l'image
+        fig_mpl, ax = plt.subplots(figsize=(9, 6))
+        ax.imshow(image)
+        ax.axis('off')
+        
+        # Sauvegarder l’image temporaire
         with tempfile.TemporaryDirectory() as tmpdirname:
             chemin_complet = os.path.join(tmpdirname, nom_fichier)
-            img_bytes = fig.to_image(format='png', width=900, height=600, scale=2)
-            with open(chemin_complet, "wb") as f:
-                f.write(img_bytes)
-            return chemin_complet
+            fig_mpl.savefig(chemin_complet, bbox_inches='tight')
+            plt.close(fig_mpl)
+            # Copier l'image temporaire pour retour stable
+            with open(chemin_complet, "rb") as fsrc:
+                temp_path = os.path.join(tempfile.gettempdir(), nom_fichier)
+                with open(temp_path, "wb") as fdst:
+                    fdst.write(fsrc.read())
+            return temp_path
     except Exception as e:
         print(f"[Erreur lors de la sauvegarde de la figure : {e}]")
         return None
+
 
 
 
@@ -74,11 +92,6 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
         run.font.size = Pt(16)
         run.font.color.rgb = RGBColor(0, 51, 102)  # bleu foncé
 
-    #def add_centered_image(image_path, width_in_inches=5):
-        #p = doc.add_paragraph()
-       # p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-      #  run = p.add_run()
-       # run.add_picture(image_path, width=Inches(width_in_inches))
     
     def add_centered_plotly_image(doc, image_path, width_in_inches=5):
         p = doc.add_paragraph()
