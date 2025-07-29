@@ -770,9 +770,9 @@ elif onglet == "📊 Analyse & Visualisation":
 
             
             # Nettoyage des fichiers images générés
-            for img_path in [img_prod_path, img_etat_path, img_ev1_path, img_ev2_path]:
-                if os.path.exists(img_path):
-                    os.remove(img_path)
+            #for img_path in [img_prod_path, img_etat_path, img_ev1_path, img_ev2_path]:
+                #if os.path.exists(img_path):
+                   # os.remove(img_path)
 
 
 
