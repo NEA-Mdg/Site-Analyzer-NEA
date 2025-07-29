@@ -12,9 +12,6 @@ venv/
 # === Fichiers de logs ===
 *.log
 
-# === Fichiers Streamlit ===
-.streamlit/config.toml
-.streamlit/*.json
 
 # === Dossiers et fichiers temporaires ===
 *.tmp
