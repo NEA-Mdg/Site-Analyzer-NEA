@@ -38,16 +38,17 @@ def clean_statut(x):
         return "?" 
     x_sans_accent = unicodedata.normalize('NFKD', str(x)).encode('ASCII', 'ignore').decode('utf-8')
     return x_sans_accent.strip().lower()
- 
-def sauvegarder_fig_plotly(fig, nom_fichier):
-    try:
-        img_bytes = fig.to_image(format="png", width=900, height=600, scale=2)
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".png", prefix=nom_fichier) as tmpfile:
-            tmpfile.write(img_bytes)
-            return tmpfile.name
-    except Exception as e:
-        print("Erreur lors de la génération de l'image :", e)
-        return None
+
+def sauvegarder_fig_plotly(fig, nom_fichier, dossier="images_export"):
+   
+    if not os.path.exists(dossier):
+        os.makedirs(dossier)
+
+    chemin_complet = os.path.join(dossier, nom_fichier)
+    pio.write_image(fig, chemin_complet, format='png', width=900, height=600, scale=2)
+    return chemin_complet
+
+
 
 def generer_rapport_word(site,date_debut, date_fin,date_jour,
                           df_production,img_production, df_etat, img_etat,
@@ -77,10 +78,16 @@ def generer_rapport_word(site,date_debut, date_fin,date_jour,
        # run.add_picture(image_path, width=Inches(width_in_inches))
     
     def add_centered_plotly_image(fig, run, width_in_inches=5):
-        buffer = BytesIO()
-        fig.write_image(buffer, format='png', width=width_in_inches * 96)  
-        buffer.seek(0)
-        run.add_picture(buffer, width=Inches(width_in_inches))
+        if fig is None:
+            run.add_text("[Erreur: figure absente]")
+            return
+        try:
+            buffer = BytesIO()
+            fig.write_image(buffer, format='png', width=int(width_in_inches * 96), height=int(width_in_inches * 96 * 0.66))  # ratio 3:2
+            buffer.seek(0)
+            run.add_picture(buffer, width=Inches(width_in_inches))
+        except Exception as e:
+            run.add_text(f"[Erreur: impossible d’ajouter le graphique – {e}]")
         
     def add_table_from_df(df, afficher_index=True):
         df = df.copy()
