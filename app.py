@@ -39,21 +39,14 @@ def clean_statut(x):
     x_sans_accent = unicodedata.normalize('NFKD', str(x)).encode('ASCII', 'ignore').decode('utf-8')
     return x_sans_accent.strip().lower()
 
-def sauvegarder_fig_plotly(fig, nom_fichier, dossier="images_export"):
-    if not os.path.exists(dossier):
-        os.makedirs(dossier)
-
-    chemin_complet = os.path.join(dossier, nom_fichier)
-
+def sauvegarder_fig_plotly(fig, nom_fichier):
     try:
-        # Générer une image avec engine="json"
-        img_bytes = fig.to_image(format='png', width=900, height=600, scale=2, engine="json")
-
-        # Sauvegarder dans un fichier local
-        with open(chemin_complet, "wb") as f:
-            f.write(img_bytes)
-
-        return chemin_complet
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            chemin_complet = os.path.join(tmpdirname, nom_fichier)
+            img_bytes = fig.to_image(format='png', width=900, height=600, scale=2)
+            with open(chemin_complet, "wb") as f:
+                f.write(img_bytes)
+            return chemin_complet
     except Exception as e:
         print(f"[Erreur lors de la sauvegarde de la figure : {e}]")
         return None
