@@ -522,12 +522,18 @@ elif onglet == "📊 Analyse & Visualisation":
         df_data["statut_installation"] = df_data["statut_installation"].fillna("?")
 
         # Définition d'une fonction qui trouve la valeur la plus fréquente
-        def statut_dominant(colonne):
-            return df_data[colonne].mode().iloc[0] if not df_data[colonne].mode().empty else "?"
+        def statut_dominant(colonne, ignorer_eteint=False):
+            serie = df_data[colonne]
+            
+            if ignorer_eteint and colonne == "statut_ge":
+                serie = serie[serie != "eteint"]
+            
+            mode_val = serie.mode()
+            return mode_val.iloc[0] if not mode_val.empty else "?"
 
         etat_dominant = {
             "Grid": statut_dominant("statut_grid"),
-            "Groupe électrogène": statut_dominant("statut_ge"),
+            "GE": statut_dominant("statut_ge",ignorer_eteint=True),
             "Solaire": statut_dominant("statut_solaire"),
             "Installation globale": statut_dominant("statut_installation")
         }
